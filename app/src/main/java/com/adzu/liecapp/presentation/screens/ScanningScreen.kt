@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.adzu.liecapp.presentation.components.CameraScreen
 
 @Composable
 fun ScanningScreen() {
@@ -17,7 +18,7 @@ fun ScanningScreen() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Scanning Plate Number")
+            CameraScreen()
         }
 
     }

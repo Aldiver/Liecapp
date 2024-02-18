@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.adzu.liecapp.presentation.screens.HomeScreen
+import com.adzu.liecapp.presentation.screens.LoginScreen
 import com.adzu.liecapp.presentation.screens.ProfileScreen
 import com.adzu.liecapp.presentation.screens.RecordsScreen
 import com.adzu.liecapp.presentation.screens.ScanningScreen
@@ -26,6 +27,9 @@ fun AppNavigator(
     NavHost(navController = navHostController,
         startDestination = startDestination,
         builder = {
+            composable("Login") {
+                LoginScreen()
+            }
             composable(NavCons.home) {
                 HomeScreen()
             }
