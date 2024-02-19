@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 val token by tokenViewModel.token.observeAsState()
 
                 // Check if the token is not null to indicate the user is logged in
-                if (token != null) {
+                if (true) {
                     // User is logged in, show the main screen with bottom navigation
                     Scaffold(
                         bottomBar = {
