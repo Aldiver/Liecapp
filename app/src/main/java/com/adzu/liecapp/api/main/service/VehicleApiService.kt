@@ -12,7 +12,14 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 
-interface MainApiService {
-    @GET("user/info")
-    suspend fun getUserInfo(): Response<UserInfoResponse>
+interface VehicleApiService {
+    @GET("vehicles/{plateNumber}")
+    suspend fun getVehicleInfo(@Path("plateNumber") plateNumber: String): Response<VehicleInfoResponse>
+
+    @GET("vehicles")
+    suspend fun getAllVehicles(): Response<List<VehicleInfoResponse>>
+
+    @POST("vehicles/entry-record")
+    @FormUrlEncoded
+    suspend fun insertEntryRecord(@Field("plateNumber") plateNumber: String): Response<Unit>
 }

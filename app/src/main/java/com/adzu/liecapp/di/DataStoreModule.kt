@@ -5,7 +5,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.adzu.liecapp.api.auth.service.AuthApiService
+import com.adzu.liecapp.api.main.service.EntryRecordApiService
 import com.adzu.liecapp.api.main.service.MainApiService
+import com.adzu.liecapp.api.main.service.VehicleApiService
 import com.adzu.liecapp.utils.AuthAuthenticator
 import com.adzu.liecapp.utils.AuthInterceptor
 import com.adzu.liecapp.utils.TokenManager
@@ -59,7 +61,7 @@ class SingletonModule {
     @Provides
     fun provideRetrofitBuilder(): Retrofit.Builder =
         Retrofit.Builder()
-            .baseUrl("http://192.168.252.82:8080/api/")
+            .baseUrl("http://192.168.80.154:8080/api/")
             .addConverterFactory(GsonConverterFactory.create())
 
     @Singleton
@@ -76,4 +78,21 @@ class SingletonModule {
             .client(okHttpClient)
             .build()
             .create(MainApiService::class.java)
+
+
+    @Singleton
+    @Provides
+    fun provideVehicleApiService(okHttpClient: OkHttpClient, retrofit: Retrofit.Builder): VehicleApiService =
+        retrofit
+            .client(okHttpClient)
+            .build()
+            .create(VehicleApiService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideEntryRecordApiService(okHttpClient: OkHttpClient, retrofit: Retrofit.Builder): EntryRecordApiService =
+        retrofit
+            .client(okHttpClient)
+            .build()
+            .create(EntryRecordApiService::class.java)
 }

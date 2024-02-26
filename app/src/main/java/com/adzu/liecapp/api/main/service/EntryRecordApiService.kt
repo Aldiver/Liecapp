@@ -12,7 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 
-interface MainApiService {
-    @GET("user/info")
-    suspend fun getUserInfo(): Response<UserInfoResponse>
+interface EntryRecordApiService {
+    @GET("entry-records")
+    suspend fun getAllEntryRecords(): Response<List<EntryInfoResponse>>
 }

@@ -109,7 +109,6 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
-
 }
 
 // Allow references to generated code
