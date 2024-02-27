@@ -65,11 +65,11 @@ class TextRecognitionAnalyzer(
 
             val adjustedRotationDegrees = (rotationDegrees + rotationAdjustment) % 360
 
-            Log.d("data ", adjustedRotationDegrees.toString() )
             suspendCoroutine { continuation ->
                 textRecognizer.process(InputImage.fromBitmap(bitmap, adjustedRotationDegrees))
                     .addOnSuccessListener { visionText: Text ->
-                        val detectedText: String = visionText.text
+//                        val detectedText: String = visionText.text
+                        val detectedText: String = visionText.textBlocks.firstOrNull()?.text ?: "No Plate Number"
                         if (detectedText.isNotBlank()) {
                             onDetectedTextUpdated(detectedText)
                         }

@@ -46,8 +46,8 @@ fun VehiclesScreen(
         })
     }
 
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Text( text = status.value)
+    Surface(modifier = Modifier.fillMaxSize().padding(bottom = 16.dp)) {
+//        Text( text = status.value)
         when (vehicleInfoState) {
             is ApiResponse.Loading -> {
                 // Show loading indicator
@@ -71,7 +71,7 @@ fun VehiclesScreen(
 @Composable
 fun VehiclesList(vehicles: List<VehicleInfo>) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2), // 2 columns
+        columns = GridCells.Fixed(1), // 2 columns
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
         items(vehicles) { vehicle ->
@@ -91,7 +91,10 @@ fun VehicleListItem(vehicle: VehicleInfo) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(text = "Owner: ${vehicle.owner}")
-            Text(text = "Plate Number: ${vehicle.plateNumber}")
+            Text(text = "Plate Number: ${vehicle.plate_number}")
+            Text(text = "Validity: ${vehicle.validity}")
+            Text(text = "Date: ${vehicle.validity_date}")
+            Text(text = "Type: ${vehicle.type}")
             // Add more text fields for other vehicle properties as needed
         }
     }

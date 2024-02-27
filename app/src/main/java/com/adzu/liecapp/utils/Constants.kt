@@ -10,10 +10,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import retrofit2.Response
 fun<T> apiRequestFlow(call: suspend () -> Response<T>): Flow<ApiResponse<T>> = flow {
 
-//    companion object{
-//    private const val BASE_URL = "http://192.168.0.240:8080"
-//      }
-
     emit(ApiResponse.Loading)
 
     withTimeoutOrNull(20000L) {

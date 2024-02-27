@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class EntryInfoResponse(
     @SerializedName("data")
-    val vehicleInfo: EntryInfo,
+    val vehicleInfo: List<EntryInfo>,
     val message: String
 )

@@ -1,9 +1,7 @@
 package com.adzu.liecapp.api.main.service
 
-import com.adzu.liecapp.api.auth.models.UserInfoResponse
-import com.adzu.liecapp.api.main.models.EntryInfoResponse
+import com.adzu.liecapp.api.main.models.VehicleInfo
 import com.adzu.liecapp.api.main.models.VehicleInfoResponse
-import com.adzu.liecapp.presentation.Screens.Vehicle
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -17,7 +15,7 @@ interface VehicleApiService {
     suspend fun getVehicleInfo(@Path("plateNumber") plateNumber: String): Response<VehicleInfoResponse>
 
     @GET("vehicles")
-    suspend fun getAllVehicles(): Response<List<VehicleInfoResponse>>
+    suspend fun getAllVehicles(): Response<List<VehicleInfo>>
 
     @POST("vehicles/entry-record")
     @FormUrlEncoded
