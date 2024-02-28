@@ -10,17 +10,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.sharp.Save
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,9 +47,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -52,8 +61,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
 import com.adzu.liecapp.api.main.models.VehicleInfo
 import com.adzu.liecapp.api.main.models.VehicleInfoResponse
+import com.adzu.liecapp.presentation.NavCons
 import com.adzu.liecapp.presentation.components.CameraPreview
 import com.adzu.liecapp.presentation.components.TextRecognitionAnalyzer
 import com.adzu.liecapp.presentation.viewmodels.CoroutinesErrorHandler
@@ -63,12 +74,14 @@ import com.adzu.liecapp.utils.ApiResponse
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanningScreen(
-    vehicleViewModel: VehicleViewModel = hiltViewModel()
+    vehicleViewModel: VehicleViewModel = hiltViewModel(),
+    navHostController: NavController
 ) {
     val vehicleData by
     vehicleViewModel.vehicleInfoResponse.observeAsState(ApiResponse.Loading)
 
     var isModalOpen by remember { mutableStateOf(false) }
+    var isScanning by remember { mutableStateOf(false) }
     var inputBoxText by remember { mutableStateOf("") }
     
     val context: Context = LocalContext.current
@@ -95,7 +108,7 @@ fun ScanningScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        if(!isModalOpen) {
+        if(!isModalOpen && !isScanning) {
             CameraPreview(controller, Modifier.fillMaxSize())
 
             Column(
@@ -114,6 +127,23 @@ fun ScanningScreen(
                         color = MaterialTheme.colorScheme.primary
                     )
             }
+
+            TransparentClipLayout(
+                modifier = Modifier.fillMaxSize(),
+                width = 300.dp,
+                height = 150.dp,
+                offsetY = 150.dp,
+            )
+
+            Button(
+                onClick = {
+                    inputBoxText = detectedText
+                    isModalOpen = true
+                },
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
         }
 
         if (isModalOpen) {
@@ -129,6 +159,8 @@ fun ScanningScreen(
                                     status.value = "Error! $message"
                                 }
                             })
+                            //check
+                            isScanning = true
                             isModalOpen = false
 
 
@@ -219,22 +251,326 @@ fun ScanningScreen(
                 )
         }
 
-        TransparentClipLayout(
-            modifier = Modifier.fillMaxSize(),
-            width = 300.dp,
-            height = 150.dp,
-            offsetY = 150.dp,
+        if(isScanning){
+            when (vehicleData) {
+                is ApiResponse.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.width(64.dp),
+                        color = MaterialTheme.colorScheme.secondary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+
+                is ApiResponse.Success -> {
+                    val vehicleInfo = (vehicleData as ApiResponse.Success<VehicleInfoResponse>).data
+                    VehicleFound(viewModel = vehicleViewModel,vehicle = vehicleInfo.vehicleInfo, navController = navHostController)
+
+                }
+
+                is ApiResponse.Failure -> {
+                    // Show error message
+                    val errorMessage = (vehicleData as ApiResponse.Failure).errorMessage
+                    VehicleNotFound(viewModel = vehicleViewModel, navController = navHostController)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun VehicleFound(
+    viewModel: VehicleViewModel,
+    vehicle: VehicleInfo,
+    navController: NavController
+){
+    val status = remember { mutableStateOf("No Error found") }
+    val vehicleData by
+    viewModel.insertEntryRecordResponse.observeAsState(ApiResponse.Loading)
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ){
+        Text(
+            text = "Owner: ${vehicle.owner}",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Plate Number: ${vehicle.plate_number}",
+            fontSize = 18.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Validity: ${vehicle.validity}",
+            fontSize = 18.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Validity Date: ${vehicle.validity_date}",
+            fontSize = 18.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Type: ${vehicle.type}",
+            fontSize = 18.sp
         )
 
         Button(
             onClick = {
-                inputBoxText = detectedText
-                isModalOpen = true
-                      },
-            modifier = Modifier.padding(8.dp)
+                viewModel.insertEntryRecord(vehicle.plate_number, object : CoroutinesErrorHandler {
+                    override fun onError(message: String) {
+                        status.value = "Error! $message"
+                    }
+                })
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            Text("Save Entry!")
         }
+
+        when (vehicleData) {
+            is ApiResponse.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(64.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+
+            is ApiResponse.Success -> {
+                val vehicleInfo = (vehicleData as ApiResponse.Success<*>).data
+
+                AlertDialog(
+                    onDismissRequest = { },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                navController.popBackStack()
+                            },
+                            shape = RoundedCornerShape(100.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                            modifier = Modifier
+                                .requiredHeight(height = 40.dp)
+                        ) {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .requiredHeight(height = 40.dp)
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                ) {
+                                    Text(
+                                        text = "Done",
+                                        color = Color(0xff6750a4),
+                                        textAlign = TextAlign.Center,
+                                        lineHeight = 1.43.em,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        modifier = Modifier
+                                            .wrapContentHeight(align = Alignment.CenterVertically))
+                                }
+                            }
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = "Success!",
+                            color = Color(0xff1d1b20),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 1.33.em,
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier
+                                .wrapContentHeight(align = Alignment.CenterVertically))
+                    },
+                    text = {
+                        Text(
+                            text = "Entry successfully uploaded to database!",
+                            color = Color(0xff49454f),
+                            lineHeight = 1.43.em,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                letterSpacing = 0.25.sp),
+                            modifier = Modifier
+                                .wrapContentHeight(align = Alignment.CenterVertically))
+                    },
+                    icon = {
+                        Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                    },
+                    containerColor = Color(0xffece6f0),
+                    shape = RoundedCornerShape(28.dp),
+                )
+            }
+
+            is ApiResponse.Failure -> {
+                // Show error message
+                val errorMessage = (vehicleData as ApiResponse.Failure).errorMessage
+                status.value = errorMessage
+            }
+        }
+    }
+}
+
+@Composable
+fun VehicleNotFound(
+    viewModel: VehicleViewModel,
+    navController: NavController
+    ){
+    var owner by remember { mutableStateOf("") }
+    var plateNumber by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf("") }
+    val status = remember { mutableStateOf("No Error found") }
+    val vehicleData by
+    viewModel.insertEntryRecordResponse.observeAsState(ApiResponse.Loading)
+
+
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ){
+        Text(
+            style = MaterialTheme.typography.displayMedium,
+            text = "Vehicle Not Found!",
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        TextField(
+            value = owner,
+            onValueChange = { owner = it },
+            label = { Text("Owner") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = plateNumber,
+            onValueChange = { plateNumber = it },
+            label = { Text("Plate Number") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = type,
+            onValueChange = { type = it },
+            label = { Text("Type") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                val newVehicle = VehicleInfo(
+                    _id = null,
+                    owner = owner,
+                    plate_number = plateNumber,
+                    validity = "Guest",
+                    validity_date = null,
+                    type = type
+                )
+                viewModel.insertVehicleAndEntryRecord(newVehicle, object : CoroutinesErrorHandler {
+                    override fun onError(message: String) {
+                        status.value = "Error! $message"
+                    }
+                })
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Save Vehicle Info")
+        }
+
+        when (vehicleData) {
+            is ApiResponse.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(64.dp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+
+            is ApiResponse.Success -> {
+                val vehicleInfo = (vehicleData as ApiResponse.Success<*>).data
+
+                AlertDialog(
+                    onDismissRequest = { },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                navController.navigate(NavCons.scan)
+                                      },
+                            shape = RoundedCornerShape(100.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                            modifier = Modifier
+                                .requiredHeight(height = 40.dp)
+                        ) {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .requiredHeight(height = 40.dp)
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                ) {
+                                    Text(
+                                        text = "Done",
+                                        color = Color(0xff6750a4),
+                                        textAlign = TextAlign.Center,
+                                        lineHeight = 1.43.em,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        modifier = Modifier
+                                            .wrapContentHeight(align = Alignment.CenterVertically))
+                                }
+                            }
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = "Guest Vehicle Saved!",
+                            color = Color(0xff1d1b20),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 1.33.em,
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier
+                                .wrapContentHeight(align = Alignment.CenterVertically))
+                    },
+                    text = {
+                        Text(
+                            text = "Entry successfully uploaded to database!",
+                            color = Color(0xff49454f),
+                            lineHeight = 1.43.em,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                letterSpacing = 0.25.sp),
+                            modifier = Modifier
+                                .wrapContentHeight(align = Alignment.CenterVertically))
+                    },
+                    icon = {
+                        Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                    },
+                    containerColor = Color(0xffece6f0),
+                    shape = RoundedCornerShape(28.dp),
+                    )
+            }
+
+            is ApiResponse.Failure -> {
+                // Show error message
+                val errorMessage = (vehicleData as ApiResponse.Failure).errorMessage
+                status.value = errorMessage
+            }
+        }
+        Text(
+            text = status.value,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error
+        )
     }
 }
 

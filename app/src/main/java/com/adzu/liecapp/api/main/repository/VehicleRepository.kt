@@ -1,5 +1,6 @@
 package com.adzu.liecapp.api.main.repository
 
+import com.adzu.liecapp.api.main.models.VehicleInfo
 import com.adzu.liecapp.api.main.service.VehicleApiService
 import com.adzu.liecapp.utils.apiRequestFlow
 import javax.inject.Inject
@@ -13,6 +14,10 @@ class VehicleRepository @Inject constructor(
 
     fun getAllVehicles() = apiRequestFlow {
         vehicleApiService.getAllVehicles()
+    }
+
+    fun insertVehicleAndEntryRecord(guestVehicle: VehicleInfo) = apiRequestFlow {
+        vehicleApiService.insertVehicleAndEntryRecord(guestVehicle)
     }
 
     fun insertEntryRecord(plateNumber: String) = apiRequestFlow {

@@ -3,6 +3,7 @@ package com.adzu.liecapp.api.main.service
 import com.adzu.liecapp.api.main.models.VehicleInfo
 import com.adzu.liecapp.api.main.models.VehicleInfoResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -18,6 +19,9 @@ interface VehicleApiService {
     suspend fun getAllVehicles(): Response<List<VehicleInfo>>
 
     @POST("vehicles/entry-record")
+    suspend fun insertVehicleAndEntryRecord(@Body vehicleInfo: VehicleInfo): Response<Unit>
+
+    @POST("vehicles/entry-record-valid")
     @FormUrlEncoded
     suspend fun insertEntryRecord(@Field("plateNumber") plateNumber: String): Response<Unit>
 }

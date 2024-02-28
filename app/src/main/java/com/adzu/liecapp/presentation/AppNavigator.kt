@@ -37,7 +37,7 @@ fun AppNavigator(
                 VehiclesScreen()
             }
             composable(NavCons.scan) {
-                ScanningScreen()
+                ScanningScreen(navHostController = navHostController)
             }
             composable(NavCons.record) {
                 RecordsScreen()

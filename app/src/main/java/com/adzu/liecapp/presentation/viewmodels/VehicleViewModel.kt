@@ -36,6 +36,13 @@ class VehicleViewModel @Inject constructor(
             vehicleRepository.getAllVehicles()
     }
 
+    fun insertVehicleAndEntryRecord(guestVehicle: VehicleInfo, coroutinesErrorHandler: CoroutinesErrorHandler) = baseRequest(
+        _insertEntryRecordResponse,
+        coroutinesErrorHandler
+    ) {
+        vehicleRepository.insertVehicleAndEntryRecord(guestVehicle)
+    }
+
     fun insertEntryRecord(plateNumber: String, coroutinesErrorHandler: CoroutinesErrorHandler) = baseRequest(
         _insertEntryRecordResponse,
         coroutinesErrorHandler
