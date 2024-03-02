@@ -93,7 +93,6 @@ fun VehicleListItem(vehicle: VehicleInfo) {
             Text(text = "Validity: ${vehicle.validity}")
             Text(text = "Date: ${vehicle.validity_date}")
             Text(text = "Type: ${vehicle.type}")
-            // Add more text fields for other vehicle properties as needed
         }
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
@@ -85,8 +86,6 @@ fun ScanningScreen(
     var inputBoxText by remember { mutableStateOf("") }
     
     val context: Context = LocalContext.current
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val cameraController: LifecycleCameraController = remember { LifecycleCameraController(context) }
     var detectedText: String by remember { mutableStateOf("No text detected yet..") }
     val status = remember { mutableStateOf("No Error found") }
 
@@ -140,7 +139,10 @@ fun ScanningScreen(
                     inputBoxText = detectedText
                     isModalOpen = true
                 },
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.BottomCenter) // Align the Button to the bottom center of its parent
+                    .offset(y = (-200).dp) // Set the y-offset to move the Button up by 300 dp
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
             }
@@ -581,12 +583,10 @@ fun TransparentClipLayout(
     height: Dp,
     offsetY: Dp,
 ) {
-    val offsetInPx: Float
     val widthInPx: Float
     val heightInPx: Float
 
     with(LocalDensity.current) {
-        offsetInPx = offsetY.toPx()
         widthInPx = width.toPx()
         heightInPx = height.toPx()
     }

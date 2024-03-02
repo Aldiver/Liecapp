@@ -4,7 +4,9 @@ import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -20,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -63,12 +66,16 @@ class MainActivity : ComponentActivity() {
                         bottomBar = {
                             BottomNav(navController = navController)
                         }
-                    ) {
-                        it
-                        AppNavigator(
-                            navHostController = navController,
-                            startDestination = Screens.Home.route
-                        )
+                    ) { innerPadding ->
+
+                        val modifier = Modifier.padding(innerPadding)
+
+                        Column(modifier = modifier) {
+                            AppNavigator(
+                                navHostController = navController,
+                                startDestination = Screens.Home.route
+                            )
+                        }
                     }
                 } else {
                     // User is not logged in, show the login screen
