@@ -1,5 +1,6 @@
 package com.adzu.liecapp.api.main.service
 
+import com.adzu.liecapp.api.main.models.VehicleCount
 import com.adzu.liecapp.api.main.models.VehicleInfo
 import com.adzu.liecapp.api.main.models.VehicleInfoResponse
 import retrofit2.Response
@@ -17,6 +18,9 @@ interface VehicleApiService {
 
     @GET("vehicles")
     suspend fun getAllVehicles(): Response<List<VehicleInfo>>
+
+    @GET("summary/vehicles")
+    suspend fun getTotalVehicles(): Response<VehicleCount>
 
     @POST("vehicles/entry-record")
     suspend fun insertVehicleAndEntryRecord(@Body vehicleInfo: VehicleInfo): Response<Unit>

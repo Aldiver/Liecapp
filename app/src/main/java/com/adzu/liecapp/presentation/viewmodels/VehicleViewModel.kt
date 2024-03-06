@@ -1,6 +1,7 @@
 package com.adzu.liecapp.presentation.viewmodels
 
 import androidx.lifecycle.MutableLiveData
+import com.adzu.liecapp.api.main.models.VehicleCount
 import com.adzu.liecapp.api.main.models.VehicleInfo
 import com.adzu.liecapp.api.main.models.VehicleInfoResponse
 import com.adzu.liecapp.api.main.repository.VehicleRepository
@@ -22,11 +23,21 @@ class VehicleViewModel @Inject constructor(
     private val _insertEntryRecordResponse = MutableLiveData<ApiResponse<Unit>>()
     val insertEntryRecordResponse = _insertEntryRecordResponse
 
+    private val _totalVehicles = MutableLiveData<ApiResponse<VehicleCount>>()
+    val totalVehiclesResponse = _totalVehicles
+
     fun getVehicleInfo(plateNumber: String, coroutinesErrorHandler: CoroutinesErrorHandler) = baseRequest(
         _vehicleInfoResponse,
         coroutinesErrorHandler
     ) {
         vehicleRepository.getVehicleInfo(plateNumber)
+    }
+
+    fun getTotalVehicles(coroutinesErrorHandler: CoroutinesErrorHandler) = baseRequest(
+        _totalVehicles,
+        coroutinesErrorHandler
+    ) {
+        vehicleRepository.getTotalVehicles()
     }
 
     fun getAllVehicles(coroutinesErrorHandler: CoroutinesErrorHandler) = baseRequest(

@@ -10,5 +10,9 @@ class EntryRecordRepository @Inject constructor(
     fun getAllEntryRecords() = apiRequestFlow {
         entryRecordApiService.getAllEntryRecords()
     }
+
+    fun getTotalEntryRecords() = apiRequestFlow {
+        entryRecordApiService.getTotalEntryRecords()
+    }
 }
 

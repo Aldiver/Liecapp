@@ -16,6 +16,10 @@ class VehicleRepository @Inject constructor(
         vehicleApiService.getAllVehicles()
     }
 
+    fun getTotalVehicles() = apiRequestFlow {
+        vehicleApiService.getTotalVehicles()
+    }
+
     fun insertVehicleAndEntryRecord(guestVehicle: VehicleInfo) = apiRequestFlow {
         vehicleApiService.insertVehicleAndEntryRecord(guestVehicle)
     }
