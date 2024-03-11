@@ -1,5 +1,7 @@
 package com.adzu.liecapp.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Camera
 import androidx.compose.material.icons.rounded.DirectionsCar
@@ -18,6 +20,7 @@ import com.adzu.liecapp.presentation.screens.RecordsScreen
 import com.adzu.liecapp.presentation.screens.ScanningScreen
 import com.adzu.liecapp.presentation.screens.VehiclesScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigator(
     navHostController: NavHostController,
@@ -43,7 +46,7 @@ fun AppNavigator(
                 RecordsScreen()
             }
             composable(NavCons.profile) {
-                ProfileScreen()
+                ProfileScreen(navController = navHostController)
             }
         })
 

@@ -1,9 +1,11 @@
 package com.adzu.liecapp.presentation
 
 import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,6 +44,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,38 +55,36 @@ class MainActivity : ComponentActivity() {
 
             LiecappTheme {
                 val hasPermission = cameraPermissionState.status.isGranted
-                var onRequestPermission = cameraPermissionState::launchPermissionRequest
+                val onRequestPermission = cameraPermissionState::launchPermissionRequest
                 var loggedIn by remember { mutableStateOf(false) }
 
                 // Observe the token to determine if the user is logged in
                 val tokenViewModel: TokenViewModel = hiltViewModel()
                 val token by tokenViewModel.token.observeAsState()
+                if(hasPermission){
 
-                // Check if the token is not null to indicate the user is logged in
-                if (true) {
-                    // User is logged in, show the main screen with bottom navigation
-                    Scaffold(
-                        bottomBar = {
-                            BottomNav(navController = navController)
+                    if(token != null){
+                        // Check if the token is not null to indicate the user is logged in
+                        Scaffold(
+                            bottomBar = {
+                                BottomNav(navController = navController)
+                            }
+                        ) { innerPadding ->
+
+                            val modifier = Modifier.padding(innerPadding)
+
+                            Column(modifier = modifier) {
+                                AppNavigator(
+                                    navHostController = navController,
+                                    startDestination = Screens.Home.route
+                                )
+                            }
                         }
-                    ) { innerPadding ->
-
-                        val modifier = Modifier.padding(innerPadding)
-
-                        Column(modifier = modifier) {
-                            AppNavigator(
-                                navHostController = navController,
-                                startDestination = Screens.Home.route
-                            )
-                        }
-                    }
-                } else {
-                    // User is not logged in, show the login screen
-                    if(hasPermission){
+                    }else{
                         LoginScreen()
-                    } else {
-                        NoPermissionScreen(onRequestPermission)
                     }
+                }else{
+                    NoPermissionScreen(onRequestPermission)
                 }
             }
         }

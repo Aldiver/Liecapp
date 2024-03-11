@@ -116,7 +116,8 @@ fun EntryInfoListItem(entryInfo: EntryInfo) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "Owner: ${entryInfo.timestamp}")
+            Text(text = "Owner: ${entryInfo.owner}")
+            Text(text = "Timestamp: ${entryInfo.timestamp}")
             Text(text = "Plate Number: ${entryInfo.vehicle_plate_number}")
             Text(text = "Date: ${entryInfo.date}")
             // Add more text fields for other vehicle properties as needed

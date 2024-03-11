@@ -59,17 +59,15 @@ fun LoginScreen(
     val passwordState = remember { mutableStateOf(TextFieldValue()) }
     val loginStat = remember { mutableStateOf("") }
 
-//    tokenViewModel.token.observe(lifecycleOwner) { token ->
-//        if (token != null)
-//    }
-
     viewModel.loginResponse.observe(lifecycleOwner) {
         when(it) {
             is ApiResponse.Failure -> loginStat.value = it.errorMessage
             ApiResponse.Loading -> loginStat.value = "Loading"
             is ApiResponse.Success -> {
-                tokenViewModel.saveToken(it.data.token)
-                loginStat.value = it.data.token
+                if (tokenViewModel.token.value == null) { // Check if token doesn't exist
+                    tokenViewModel.saveToken(it.data.token) // Save token only if it doesn't exist
+                    loginStat.value = it.data.token
+                }
             }
         }
     }
