@@ -6,7 +6,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.adzu.liecapp.di.dataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-class TokenManager(private val context: Context) {
+class TokenManager(
+    private val context: Context) {
     companion object {
         private val TOKEN_KEY = stringPreferencesKey("jwt_token")
     }

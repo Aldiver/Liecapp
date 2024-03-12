@@ -1,7 +1,7 @@
 
 package com.adzu.liecapp.presentation.screens
 
-import android.widget.Space
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +40,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.adzu.liecapp.R
 import com.adzu.liecapp.api.auth.models.Auth
 import com.adzu.liecapp.presentation.viewmodels.AuthViewModel
@@ -55,8 +56,8 @@ fun LoginScreen(
     tokenViewModel: TokenViewModel = hiltViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val emailState = remember { mutableStateOf(TextFieldValue()) }
-    val passwordState = remember { mutableStateOf(TextFieldValue()) }
+    val emailState = remember { mutableStateOf<String>("") }
+    val passwordState = remember { mutableStateOf<String>("") }
     val loginStat = remember { mutableStateOf("") }
 
     viewModel.loginResponse.observe(lifecycleOwner) {
@@ -132,13 +133,14 @@ fun LoginScreen(
                     color = Color.White
                 ) },
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .weight(1f),
+                    .padding(vertical = 8.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
                     focusedBorderColor = Color.White, // Outline color when focused
                     unfocusedBorderColor = Color.White // Outline color when not focused
+
                 ),
                 shape = RoundedCornerShape(24.dp)
             )
@@ -151,10 +153,10 @@ fun LoginScreen(
                 ) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .weight(1f),
+                    .padding(vertical = 8.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
                     focusedBorderColor = Color.White, // Outline color when focused
                     unfocusedBorderColor = Color.White // Outline color when not focused
                 ),
@@ -165,8 +167,9 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(200.dp))
             Button(
                 onClick = {
+                    Log.d("LoginActivity", "Email: ${emailState.value}, Password: ${passwordState.value}")
                     viewModel.login(
-                        Auth("aldever@gmail.com", "helloword"),
+                        Auth(emailState.value, passwordState.value),
                         object : CoroutinesErrorHandler {
                             override fun onError(message: String) {
                                 loginStat.value = "Error! $message"

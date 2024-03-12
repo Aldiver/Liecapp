@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -58,33 +59,33 @@ class MainActivity : ComponentActivity() {
                 val onRequestPermission = cameraPermissionState::launchPermissionRequest
                 var loggedIn by remember { mutableStateOf(false) }
 
+
                 // Observe the token to determine if the user is logged in
                 val tokenViewModel: TokenViewModel = hiltViewModel()
                 val token by tokenViewModel.token.observeAsState()
-                if(hasPermission){
 
-                    if(token != null){
-                        // Check if the token is not null to indicate the user is logged in
-                        Scaffold(
-                            bottomBar = {
-                                BottomNav(navController = navController)
-                            }
-                        ) { innerPadding ->
+                LaunchedEffect(token) {
+                    loggedIn = token != null
+                }
 
-                            val modifier = Modifier.padding(innerPadding)
-
-                            Column(modifier = modifier) {
-                                AppNavigator(
-                                    navHostController = navController,
-                                    startDestination = Screens.Home.route
-                                )
-                            }
+                // Check if the token is not null to indicate the user is logged in
+                Scaffold(
+                    bottomBar = {
+                        if(loggedIn && hasPermission){
+                            BottomNav(navController = navController)
                         }
-                    }else{
-                        LoginScreen()
                     }
-                }else{
-                    NoPermissionScreen(onRequestPermission)
+                )
+                { innerPadding ->
+                    val modifier = Modifier.padding(innerPadding)
+                    Column(modifier = modifier) {
+                        AppNavigator(
+                            navHostController = navController,
+                            permission = hasPermission,
+                            requestPermission = onRequestPermission,
+                            login = loggedIn
+                        )
+                    }
                 }
             }
         }

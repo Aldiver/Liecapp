@@ -1,6 +1,7 @@
 package com.adzu.liecapp.api.auth.models
 
 data class UserInfo(
-    val id: String,
-    val email_address: String
+    val id: Int,
+    val name: String,
+    val email: String,
 )

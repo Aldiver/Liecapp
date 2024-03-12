@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,6 +52,7 @@ fun ProfileScreen(
     tokenViewModel: TokenViewModel = hiltViewModel(),
     navController: NavController
 ) {
+
     val configuration = LocalConfiguration.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -61,9 +64,10 @@ fun ProfileScreen(
 
     val status = remember { mutableStateOf("No Error found") }
 
+
     tokenViewModel.token.observe(lifecycleOwner) { token ->
         if (token == null) {
-            navController.popBackStack()
+            navController.navigate("login")
         }
     }
 
@@ -106,19 +110,7 @@ fun ProfileScreen(
                     style = MaterialTheme.typography.labelLarge
                 )
 
-                Text(
-                    text = when(authDetail) {
-                        is ApiResponse.Failure -> "Error retrieving data ${(authDetail as ApiResponse.Failure).code}"
-                        ApiResponse.Loading -> "Loading"
-                        is ApiResponse.Success ->
-                        {
-                            val userInformation = (authDetail as ApiResponse.Success<UserInfoResponse>).data
-                            "User ${userInformation.userInfo}"
-                        }
-                    },
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    style = MaterialTheme.typography.bodySmall
-                )
+                UserInfoView(authDetail)
                 Button(
                     onClick = {
                         tokenViewModel.deleteToken()
@@ -139,6 +131,34 @@ fun ProfileScreen(
                     )
                 }
 
+            }
+        }
+    }
+}
+
+@Composable
+fun UserInfoView(authDetail: ApiResponse<UserInfoResponse>) {
+    when (authDetail) {
+        is ApiResponse.Failure -> {
+            Text(
+                text = "Error retrieving data ${authDetail.code}",
+                modifier = Modifier.padding(vertical = 8.dp),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+        ApiResponse.Loading -> {
+            CircularProgressIndicator(
+                modifier = Modifier.width(24.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        }
+        is ApiResponse.Success -> {
+            val userInformation = authDetail.data.userInfo
+            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                Text(text = "ID: ${userInformation.id}", style = MaterialTheme.typography.bodySmall)
+                Text(text = "Name: ${userInformation.name}", style = MaterialTheme.typography.bodySmall)
+                Text(text = "Email: ${userInformation.email}", style = MaterialTheme.typography.bodySmall)
             }
         }
     }

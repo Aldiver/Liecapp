@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,10 +37,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.adzu.liecapp.R
 import com.adzu.liecapp.api.main.models.EntryCount
 import com.adzu.liecapp.api.main.models.VehicleCount
 import com.adzu.liecapp.api.main.models.VehicleInfo
+import com.adzu.liecapp.presentation.Screens
 import com.adzu.liecapp.presentation.viewmodels.CoroutinesErrorHandler
 import com.adzu.liecapp.presentation.viewmodels.EntryRecordViewModel
 import com.adzu.liecapp.presentation.viewmodels.VehicleViewModel
@@ -51,7 +55,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(
     vehicleViewModel: VehicleViewModel = hiltViewModel(),
-    recordViewModel: EntryRecordViewModel = hiltViewModel()
+    recordViewModel: EntryRecordViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val configuration = LocalConfiguration.current
 
@@ -214,6 +219,24 @@ fun HomeScreen(
                                 modifier = Modifier.padding(16.dp),
                                 style = MaterialTheme.typography.labelLarge
                             )
+                            Column (
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+                                Button(
+                                    onClick = {
+                                        navController.navigate(Screens.Scan.route)
+                                    },
+                                    modifier = Modifier
+                                        .size(100.dp),
+                                ){
+                                    Image(
+                                        painter = painterResource(id = R.drawable.scan),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize(),
+                                    )
+                                }
+                            }
                         }
                     }
                     item {

@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.adzu.liecapp.presentation.screens.HomeScreen
 import com.adzu.liecapp.presentation.screens.LoginScreen
+import com.adzu.liecapp.presentation.screens.NoPermissionContent
 import com.adzu.liecapp.presentation.screens.ProfileScreen
 import com.adzu.liecapp.presentation.screens.RecordsScreen
 import com.adzu.liecapp.presentation.screens.ScanningScreen
@@ -24,17 +25,31 @@ import com.adzu.liecapp.presentation.screens.VehiclesScreen
 @Composable
 fun AppNavigator(
     navHostController: NavHostController,
-    startDestination: String,
+    permission: Boolean,
+    login: Boolean,
+    requestPermission: () -> Unit
 ) {
+    var startDestination = "Login"
+
+    if(permission){
+        if(login){
+            startDestination = "Home"
+        }
+    }else{
+        startDestination = "requestPermission"
+    }
 
     NavHost(navController = navHostController,
         startDestination = startDestination,
         builder = {
+            composable("requestPermission") {
+                NoPermissionContent(requestPermission)
+            }
             composable("Login") {
                 LoginScreen()
             }
             composable(NavCons.home) {
-                HomeScreen()
+                HomeScreen(navController = navHostController)
             }
             composable(NavCons.vehicle) {
                 VehiclesScreen()
