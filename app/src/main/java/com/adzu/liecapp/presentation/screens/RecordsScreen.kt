@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +43,9 @@ import com.adzu.liecapp.utils.ApiResponse
 fun RecordsScreen(
     recordViewModel: EntryRecordViewModel = hiltViewModel()
 ) {
+    // Define search query state
+    val searchQuery = remember { mutableStateOf("") }
+
     val entryInfoState by
     recordViewModel.allEntryRecordsResponse.observeAsState(ApiResponse.Loading)
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -59,33 +64,52 @@ fun RecordsScreen(
             }
         })
     }
-    Box(modifier = Modifier.fillMaxSize()
+    Box(modifier = Modifier
+        .fillMaxSize()
         .background(
-        brush = Brush.verticalGradient(
-            colors = listOf(Color.Blue, Color.Blue, Color.Black),
-            startY = 0f,
-            endY = pxValue, // Adjust the endY value as needed
-        )),
-        contentAlignment = Alignment.Center
+            brush = Brush.verticalGradient(
+                colors = listOf(Color.Blue, Color.Blue, Color.Black),
+                startY = 0f,
+                endY = pxValue, // Adjust the endY value as needed
+            )
+        ),
+        contentAlignment = Alignment.TopCenter
     ) {
-        when (entryInfoState) {
-            is ApiResponse.Loading -> {
-                // Show loading indicator
-//                CircularProgressIndicator()
-                Image(
-                    painter = painterResource(id = R.drawable.paper),
-                    contentDescription = null,
-                )
-            }
-            is ApiResponse.Success -> {
-                // Show list of vehicles
-                val entryInfo = (entryInfoState as ApiResponse.Success<List<EntryInfo>>).data
-                EntryInfoList(entryInfos = entryInfo)
-            }
-            is ApiResponse.Failure -> {
-                // Show error message
-                val errorMessage = (entryInfoState as ApiResponse.Failure).errorMessage
-                Text(text = "Error: $errorMessage", modifier = Modifier.padding(16.dp))
+        Column{
+            TextField(
+                value = searchQuery.value,
+                onValueChange = { searchQuery.value = it },
+                label = { Text("Search") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                singleLine = true,
+                shape = RoundedCornerShape(24.dp),
+            )
+
+            when (entryInfoState) {
+                is ApiResponse.Loading -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.paper),
+                        contentDescription = null,
+                    )
+                }
+
+                is ApiResponse.Success -> {
+                    // Show list of vehicles
+                    val entryInfo = (entryInfoState as ApiResponse.Success<List<EntryInfo>>).data
+                    val filteredEntries = entryInfo.filter { entry ->
+                        entry.owner.contains(searchQuery.value, true) ||
+                                entry.vehicle_plate_number.contains(searchQuery.value, true)
+                    }
+                    EntryInfoList(entryInfos = filteredEntries)
+                }
+
+                is ApiResponse.Failure -> {
+                    // Show error message
+                    val errorMessage = (entryInfoState as ApiResponse.Failure).errorMessage
+                    Text(text = "Error: $errorMessage", modifier = Modifier.padding(16.dp))
+                }
             }
         }
     }

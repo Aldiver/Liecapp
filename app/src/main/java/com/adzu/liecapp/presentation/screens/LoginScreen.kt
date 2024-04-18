@@ -142,7 +142,8 @@ fun LoginScreen(
                     unfocusedBorderColor = Color.White // Outline color when not focused
 
                 ),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(24.dp),
+                singleLine = true,
             )
             OutlinedTextField(
                 value = passwordState.value,
@@ -161,6 +162,7 @@ fun LoginScreen(
                     unfocusedBorderColor = Color.White // Outline color when not focused
                 ),
                 shape = RoundedCornerShape(24.dp),
+                singleLine = true,
             )
 
             // Login button
