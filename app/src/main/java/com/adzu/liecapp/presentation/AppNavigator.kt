@@ -18,6 +18,7 @@ import com.adzu.liecapp.presentation.screens.LoginScreen
 import com.adzu.liecapp.presentation.screens.NoPermissionContent
 import com.adzu.liecapp.presentation.screens.ProfileScreen
 import com.adzu.liecapp.presentation.screens.RecordsScreen
+import com.adzu.liecapp.presentation.screens.RegisterScreen
 import com.adzu.liecapp.presentation.screens.ScanningScreen
 import com.adzu.liecapp.presentation.screens.VehiclesScreen
 
@@ -63,6 +64,9 @@ fun AppNavigator(
             composable(NavCons.profile) {
                 ProfileScreen(navController = navHostController)
             }
+            composable(NavCons.register){
+                RegisterScreen(navController = navHostController)
+            }
         })
 
 }
@@ -106,4 +110,5 @@ object NavCons {
     const val scan = "Scan"
     const val record = "Records"
     const val profile = "Profile"
+    const val register = "Register"
 }
